@@ -1,24 +1,613 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPGA HMUE - Registro de Ocorrências</title>
-    <meta name="description" content="Sistema de Registro de Ocorrências - Segurança Patrimonial e Gestão de Acesso HMUE">
-    
-    
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="SPGA HMUE - Registro de Ocorrências">
-  <meta name="twitter:title" content="SPGA HMUE - Registro de Ocorrências">
-  <meta property="og:description" content="Sistema de Registro de Ocorrências - Segurança Patrimonial e Gestão de Acesso HMUE">
-  <meta name="twitter:description" content="Sistema de Registro de Ocorrências - Segurança Patrimonial e Gestão de Acesso HMUE">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b967fe53-4d50-46bd-b195-6069099f885b/id-preview-e7a1a0ce--d2cbe602-e383-4182-8b7f-c14de72fee0a.lovable.app-1773698651184.png">
-  <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b967fe53-4d50-46bd-b195-6069099f885b/id-preview-e7a1a0ce--d2cbe602-e383-4182-8b7f-c14de72fee0a.lovable.app-1773698651184.png">
-  <meta name="twitter:card" content="summary_large_image">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0D1B2A;
+            --secondary: #1B4F72;
+            --accent: #00C2CB;
+            --whatsapp: #25D366;
+            --white: #FFFFFF;
+            --bg: #F4F7F6;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #E0E5EC;
+            --danger: #E74C3C;
+            --shadow: 0 4px 20px rgba(13, 27, 42, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--primary);
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--primary);
+            color: var(--white);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        header i {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-right: 15px;
+        }
+
+        header h2 {
+            font-size: 1.2rem;
+            color: var(--white);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 30px auto 60px;
+            padding: 0 20px;
+            animation: slideUp 0.6s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border-top: 4px solid var(--secondary);
+        }
+
+        .card-title {
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--secondary);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            background-color: #FAFAFA;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 3px rgba(27, 79, 114, 0.1);
+        }
+
+        .error-field {
+            border-color: var(--danger) !important;
+            background-color: #FDF2F1 !important;
+        }
+        
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        /* File Upload */
+        .file-upload-box {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #FAFAFA;
+            transition: var(--transition);
+        }
+
+        .file-upload-box:hover {
+            border-color: var(--accent);
+            background-color: #F0FBFC;
+        }
+
+        .file-upload-box i {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F8F9FA;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .file-item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .btn-remove-file {
+            color: var(--danger);
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: var(--transition);
+        }
+
+        .btn-remove-file:hover {
+            transform: scale(1.1);
+        }
+
+        /* Actions */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--white);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-email {
+            background-color: var(--primary);
+        }
+
+        .btn-wpp {
+            background-color: var(--whatsapp);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        /* Alerts */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #FFF3CD;
+            color: #856404;
+            border-left: 4px solid #FFEBA8;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 27, 42, 0.6);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--whatsapp);
+            margin-bottom: 20px;
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h2 {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<body>
+
+    <header>
+        <i class="fas fa-shield-alt"></i>
+        <h2>SPGA HMUE - Registro de Ocorrências</h2>
+    </header>
+
+    <div class="container">
+        
+        <div class="alert">
+            <i class="fas fa-info-circle" style="margin-top: 3px;"></i>
+            <div>
+                <strong>Atenção:</strong> Este formulário é para uso exclusivo de registro de ocorrências patrimoniais. Certifique-se de preencher todos os campos obrigatórios.
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-edit"></i>
+                <h3>Dados da Ocorrência</h3>
+            </div>
+
+            <div class="form-group">
+                <label for="titulo">Título da Ocorrência *</label>
+                <input type="text" id="titulo" placeholder="Ex: Furto de cabos, Avaria em porta..." required>
+                <div class="error-msg" id="error-titulo">Por favor, informe um título.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="data-hora">Data e Hora do Evento *</label>
+                <input type="datetime-local" id="data-hora" required>
+                <div class="error-msg" id="error-data">Informe a data e hora.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="local">Localização Exata *</label>
+                <input type="text" id="local" placeholder="Ex: Bloco B, Estacionamento Sul..." required>
+                <div class="error-msg" id="error-local">Informe o local.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição Detalhada *</label>
+                <textarea id="descricao" rows="6" placeholder="Descreva o que aconteceu com o máximo de detalhes possível..." required></textarea>
+                <div class="char-counter"><span id="char-count">0</span>/1000 caracteres</div>
+                <div class="error-msg" id="error-descricao">A descrição é obrigatória.</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-camera"></i>
+                <h3>Evidências (Fotos/Documentos)</h3>
+            </div>
+            
+            <div class="file-upload-box" onclick="document.getElementById('file-input').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Clique para selecionar ou arraste arquivos aqui</p>
+                <span style="font-size: 0.8rem; color: var(--text-light);">Formatos aceitos: JPG, PNG, PDF (Máx 5MB)</span>
+            </div>
+            <input type="file" id="file-input" multiple accept="image/*,.pdf">
+            
+            <div class="file-list" id="file-list">
+                <!-- Arquivos aparecerão aqui -->
+            </div>
+        </div>
+
+        <div class="actions-grid">
+            <button class="btn btn-email" onclick="enviarOcorrencia('email')">
+                <i class="fas fa-envelope"></i>
+                Enviar por E-mail
+            </button>
+            <button class="btn btn-wpp" onclick="enviarOcorrencia('whatsapp')">
+                <i class="fab fa-whatsapp"></i>
+                Enviar via WhatsApp
+            </button>
+        </div>
+        
+        <button class="btn btn-outline" style="width: 100%; margin-top: 15px;" onclick="limparFormulario()">
+            <i class="fas fa-eraser"></i>
+            Limpar Formulário
+        </button>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2024 SPGA - Sistema de Gestão de Segurança Patrimonial</p>
+        <p style="font-size: 0.75rem; margin-top: 5px;">Hospital Metropolitano de Urgência e Emergência</p>
+    </footer>
+
+    <!-- Modal de Sucesso -->
+    <div class="modal-overlay" id="modal-sucesso">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registro Iniciado</h3>
+                <button class="btn-close-modal" onclick="fecharModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p id="modal-text">Seu registro foi formatado com sucesso! Você será redirecionado para concluir o envio.</p>
+                <button class="btn btn-email" style="width: 100%; margin-top: 20px;" onclick="fecharModal()">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Contador de caracteres
+        const descricao = document.getElementById('descricao');
+        const charCount = document.getElementById('char-count');
+
+        descricao.addEventListener('input', () => {
+            const count = descricao.value.length;
+            charCount.textContent = count;
+            if (count > 1000) {
+                descricao.value = descricao.value.substring(0, 1000);
+                charCount.textContent = 1000;
+            }
+        });
+
+        // Gerenciamento de arquivos
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        let uploadedFiles = [];
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`O arquivo ${file.name} excede o limite de 5MB.`);
+                    return;
+                }
+                uploadedFiles.push(file);
+                renderFiles();
+            });
+        });
+
+        function renderFiles() {
+            fileList.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <div class="file-item-info">
+                        <i class="fas ${file.type.includes('image') ? 'fa-image' : 'fa-file-pdf'}"></i>
+                        <span>${file.name}</span>
+                    </div>
+                    <button class="btn-remove-file" onclick="removeFile(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                fileList.appendChild(item);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderFiles();
+        }
+
+        // Validação e Envio
+        function validarForm() {
+            let isValid = true;
+            const fields = ['titulo', 'data-hora', 'local', 'descricao'];
+            
+            fields.forEach(field => {
+                const el = document.getElementById(field);
+                const error = document.getElementById(`error-${field.split('-')[0]}`);
+                
+                if (!el.value.trim()) {
+                    el.classList.add('error-field');
+                    if (error) error.style.display = 'block';
+                    isValid = false;
+                } else {
+                    el.classList.remove('error-field');
+                    if (error) error.style.display = 'none';
+                }
+            });
+
+            return isValid;
+        }
+
+        function enviarOcorrencia(metodo) {
+            if (!validarForm()) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            const dados = {
+                titulo: document.getElementById('titulo').value,
+                data: new Date(document.getElementById('data-hora').value).toLocaleString('pt-BR'),
+                local: document.getElementById('local').value,
+                descricao: document.getElementById('descricao').value,
+                arquivos: uploadedFiles.length
+            };
+
+            const mensagem = `*NOVA OCORRÊNCIA - SPGA*%0A%0A` +
+                             `*Título:* ${dados.titulo}%0A` +
+                             `*Data/Hora:* ${dados.data}%0A` +
+                             `*Local:* ${dados.local}%0A%0A` +
+                             `*Descrição:* ${dados.descricao}%0A%0A` +
+                             `*Anexos:* ${dados.arquivos} arquivo(s)`;
+
+            if (metodo === 'whatsapp') {
+                const url = `https://wa.me/?text=${mensagem}`;
+                window.open(url, '_blank');
+            } else {
+                const subject = `OCORRÊNCIA: ${dados.titulo}`;
+                const body = mensagem.replace(/%0A/g, '\n').replace(/\*/g, '');
+                const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailto;
+            }
+
+            mostrarModal();
+        }
+
+        function mostrarModal() {
+            document.getElementById('modal-sucesso').classList.add('active');
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-sucesso').classList.remove('active');
+        }
+
+        function limparFormulario() {
+            if (confirm('Deseja realmente limpar todos os campos?')) {
+                document.getElementById('titulo').value = '';
+                document.getElementById('data-hora').value = '';
+                document.getElementById('local').value = '';
+                document.getElementById('descricao').value = '';
+                uploadedFiles = [];
+                renderFiles();
+                charCount.textContent = '0';
+                
+                // Limpar erros
+                const fields = ['titulo', 'data-hora', 'local', 'descricao'];
+                fields.forEach(field => {
+                    document.getElementById(field).classList.remove('error-field');
+                    const error = document.getElementById(`error-${field.split('-')[0]}`);
+                    if (error) error.style.display = 'none';
+                });
+            }
+        }
+    </script>
+</body>
 </html>
