@@ -444,9 +444,9 @@
             </div>
 
             <div class="actions-grid">
-                <button type="button" class="btn btn-email" onclick="enviarOcorrencia('sheets')">
-                    <i class="fas fa-database"></i>
-                    Salvar no Banco
+                <button type="button" class="btn btn-email" onclick="enviarOcorrencia('email')">
+                    <i class="fas fa-envelope"></i>
+                    Enviar por E-mail
                 </button>
                 <button type="button" class="btn btn-wpp" onclick="enviarOcorrencia('whatsapp')">
                     <i class="fab fa-whatsapp"></i>
@@ -471,14 +471,14 @@
     <div class="modal-overlay" id="modal-sucesso">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Registro Salvo com Sucesso!</h3>
+                <h3>Ocorrência Enviada com Sucesso!</h3>
                 <button type="button" class="btn-close-modal" onclick="fecharModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="success-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <p id="modal-text">Seu registro foi salvo com sucesso na planilha!</p>
+                <p id="modal-text">Seu registro foi enviado com sucesso para o e-mail!</p>
                 <button type="button" class="btn btn-email" style="width: 100%; margin-top: 20px;" onclick="fecharModal()">Entendido</button>
             </div>
         </div>
@@ -488,14 +488,14 @@
     <div class="modal-overlay" id="modal-erro">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Erro ao Salvar</h3>
+                <h3>Erro ao Enviar</h3>
                 <button type="button" class="btn-close-modal" onclick="fecharModalErro()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="error-icon">
                     <i class="fas fa-exclamation-circle"></i>
                 </div>
-                <p id="modal-erro-text">Ocorreu um erro ao salvar o registro. Tente novamente.</p>
+                <p id="modal-erro-text">Ocorreu um erro ao enviar o registro. Tente novamente.</p>
                 <button type="button" class="btn btn-email" style="width: 100%; margin-top: 20px;" onclick="fecharModalErro()">Tentar Novamente</button>
             </div>
         </div>
@@ -503,6 +503,7 @@
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRsp931aSamfqzlmcsYJFRXcExHZF7338sFIlXBBZphI5vp-U7mke-z8nm5zK7cwAEvQ/exec';
+        const EMAIL_DESTINO = 'andre.260053-2024@aluno.unicv.edu.br';
 
         // Contador de caracteres
         const descricao = document.getElementById('descricao');
@@ -594,9 +595,9 @@
                 arquivos: uploadedFiles.length
             };
 
-            if (metodo === 'sheets') {
-                // Enviar para Google Sheets via Apps Script
-                enviarParaGoogleSheets(dados);
+            if (metodo === 'email') {
+                // Enviar para e-mail via Google Apps Script
+                enviarParaEmail(dados);
             } else if (metodo === 'whatsapp') {
                 // Enviar via WhatsApp
                 const mensagem = `*NOVA OCORRÊNCIA - SPGA*%0A%0A` +
@@ -611,9 +612,11 @@
             }
         }
 
-        function enviarParaGoogleSheets(dados) {
+        function enviarParaEmail(dados) {
             // Preparar dados para envio
             const formData = new FormData();
+            formData.append('acao', 'enviarEmail');
+            formData.append('email', EMAIL_DESTINO);
             formData.append('titulo', dados.titulo);
             formData.append('data', dados.data);
             formData.append('local', dados.local);
@@ -621,9 +624,9 @@
             formData.append('quantidadeArquivos', dados.arquivos);
 
             // Desabilitar botão enquanto processa
-            const btnSalvar = document.querySelector('.btn-email');
-            btnSalvar.disabled = true;
-            btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            const btnEnviar = document.querySelector('.btn-email');
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
             // Enviar para Google Apps Script
             fetch(GOOGLE_SCRIPT_URL, {
@@ -632,8 +635,8 @@
             })
             .then(response => {
                 // Reabilitar botão
-                btnSalvar.disabled = false;
-                btnSalvar.innerHTML = '<i class="fas fa-database"></i> Salvar no Banco';
+                btnEnviar.disabled = false;
+                btnEnviar.innerHTML = '<i class="fas fa-envelope"></i> Enviar por E-mail';
                 
                 // Mostrar modal de sucesso
                 mostrarModal();
@@ -647,8 +650,8 @@
                 console.error('Erro:', error);
                 
                 // Reabilitar botão
-                btnSalvar.disabled = false;
-                btnSalvar.innerHTML = '<i class="fas fa-database"></i> Salvar no Banco';
+                btnEnviar.disabled = false;
+                btnEnviar.innerHTML = '<i class="fas fa-envelope"></i> Enviar por E-mail';
                 
                 // Mostrar modal de erro
                 mostrarModalErro();
