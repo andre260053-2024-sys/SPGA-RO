@@ -418,9 +418,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="lider">Identificação do Líder SPGA *</label>
+                    <input type="text" id="lider" name="lider" placeholder="Nome do líder SPGA responsável" required>
+                    <div class="error-msg" id="error-lider">Informe o líder SPGA.</div>
+                </div>
+
+                <div class="form-group">
                     <label for="descricao">Descrição Detalhada *</label>
                     <textarea id="descricao" name="descricao" rows="6" placeholder="Descreva o que aconteceu com o máximo de detalhes possível..." required></textarea>
-                    <div class="char-counter"><span id="char-count">0</span>/1000 caracteres</div>
+                    <div class="char-counter"><span id="char-count">0</span>/2000 caracteres</div>
                     <div class="error-msg" id="error-descricao">A descrição é obrigatória.</div>
                 </div>
             </div>
@@ -443,15 +449,22 @@
                 </div>
             </div>
 
-            <div class="actions-grid">
-                <button type="button" class="btn btn-email" onclick="enviarOcorrencia('email')">
-                    <i class="fas fa-envelope"></i>
-                    Enviar por E-mail
-                </button>
-                <button type="button" class="btn btn-wpp" onclick="enviarOcorrencia('whatsapp')">
-                    <i class="fab fa-whatsapp"></i>
-                    Enviar via WhatsApp
-                </button>
+            <div class="card">
+                <div class="alert">
+                    <i class="fas fa-triangle-exclamation" style="font-size: 1.2rem;"></i>
+                    <span><strong>Atenção:</strong> Anexos devem ser adicionados manualmente após abrir o e-mail ou WhatsApp.</span>
+                </div>
+
+                <div class="actions-grid">
+                    <button type="button" class="btn btn-email" onclick="enviarOcorrencia('email')">
+                        <i class="fas fa-envelope"></i>
+                        Enviar por E-mail
+                    </button>
+                    <button type="button" class="btn btn-wpp" onclick="enviarOcorrencia('whatsapp')">
+                        <i class="fab fa-whatsapp"></i>
+                        Enviar via WhatsApp
+                    </button>
+                </div>
             </div>
             
             <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 15px;" onclick="limparFormulario()">
@@ -478,7 +491,7 @@
                 <div class="success-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <p id="modal-text">Seu registro foi enviado com sucesso para o e-mail!</p>
+                <p id="modal-text">Seu registro foi enviado com sucesso!</p>
                 <button type="button" class="btn btn-email" style="width: 100%; margin-top: 20px;" onclick="fecharModal()">Entendido</button>
             </div>
         </div>
@@ -512,9 +525,9 @@
         descricao.addEventListener('input', () => {
             const count = descricao.value.length;
             charCount.textContent = count;
-            if (count > 1000) {
-                descricao.value = descricao.value.substring(0, 1000);
-                charCount.textContent = 1000;
+            if (count > 2000) {
+                descricao.value = descricao.value.substring(0, 2000);
+                charCount.textContent = 2000;
             }
         });
 
@@ -561,7 +574,7 @@
         // Validação e Envio
         function validarForm() {
             let isValid = true;
-            const fields = ['titulo', 'data-hora', 'local', 'descricao'];
+            const fields = ['titulo', 'data-hora', 'local', 'lider', 'descricao'];
             
             fields.forEach(field => {
                 const el = document.getElementById(field);
@@ -581,79 +594,103 @@
             return isValid;
         }
 
+        function gerarTextoFormatado() {
+            const titulo = document.getElementById('titulo').value.trim();
+            const dataOrig = document.getElementById('data-hora').value;
+            const local = document.getElementById('local').value.trim();
+            const lider = document.getElementById('lider').value.trim();
+            const desc = document.getElementById('descricao').value.trim();
+
+            let dataFormatada = dataOrig;
+            if(dataOrig) {
+                const dt = new Date(dataOrig);
+                dataFormatada = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            }
+
+            return `*SPGA – Ocorrência | HMUE*\n\n*📌 Título:* ${titulo}\n*📅 Data/Hora:* ${dataFormatada}\n*📍 Local:* ${local}\n*👤 Líder SPGA:* ${lider}\n\n*📄 Descrição:*\n${desc}`;
+        }
+
         function enviarOcorrencia(metodo) {
             if (!validarForm()) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             }
 
-            const dados = {
-                titulo: document.getElementById('titulo').value,
-                data: new Date(document.getElementById('data-hora').value).toLocaleString('pt-BR'),
-                local: document.getElementById('local').value,
-                descricao: document.getElementById('descricao').value,
-                arquivos: uploadedFiles.length
-            };
+            const titulo = document.getElementById('titulo').value.trim();
+            const dataOrig = document.getElementById('data-hora').value;
+            const local = document.getElementById('local').value.trim();
+            const lider = document.getElementById('lider').value.trim();
+            const desc = document.getElementById('descricao').value.trim();
+
+            let dataFormatada = "";
+            if(dataOrig) {
+                const dt = new Date(dataOrig);
+                dataFormatada = dt.toLocaleDateString('pt-BR') + ' - ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            }
 
             if (metodo === 'email') {
-                // Enviar para e-mail via Google Apps Script
-                enviarParaEmail(dados);
+                enviarParaEmail(titulo, dataFormatada, local, lider, desc);
             } else if (metodo === 'whatsapp') {
-                // Enviar via WhatsApp
-                const mensagem = `*NOVA OCORRÊNCIA - SPGA*%0A%0A` +
-                                 `*Título:* ${dados.titulo}%0A` +
-                                 `*Data/Hora:* ${dados.data}%0A` +
-                                 `*Local:* ${dados.local}%0A%0A` +
-                                 `*Descrição:* ${dados.descricao}%0A%0A` +
-                                 `*Anexos:* ${dados.arquivos} arquivo(s)`;
-                
+                const texto = gerarTextoFormatado();
+                const mensagem = encodeURIComponent(texto);
                 const url = `https://wa.me/?text=${mensagem}`;
                 window.open(url, '_blank');
             }
         }
 
-        function enviarParaEmail(dados) {
-            // Preparar dados para envio
-            const formData = new FormData();
-            formData.append('acao', 'enviarEmail');
-            formData.append('email', EMAIL_DESTINO);
-            formData.append('titulo', dados.titulo);
-            formData.append('data', dados.data);
-            formData.append('local', dados.local);
-            formData.append('descricao', dados.descricao);
-            formData.append('quantidadeArquivos', dados.arquivos);
+        function enviarParaEmail(titulo, data, local, lider, desc) {
+            const btnEmail = document.querySelector('.btn-email');
+            const textoOriginal = btnEmail.innerHTML;
+            btnEmail.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            btnEmail.disabled = true;
 
-            // Desabilitar botão enquanto processa
-            const btnEnviar = document.querySelector('.btn-email');
-            btnEnviar.disabled = true;
-            btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            const promises = uploadedFiles.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        resolve({
+                            nome: file.name,
+                            tipo: file.type,
+                            conteudo: reader.result.split(',')[1]
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
 
-            // Enviar para Google Apps Script
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: formData
+            Promise.all(promises).then(anexosBase64 => {
+                const assunto = `[SPGA - Ocorrência] ${titulo} - ${data}`;
+                
+                const payload = {
+                    titulo: titulo,
+                    dataHora: data,
+                    local: local,
+                    lider: lider,
+                    descricao: desc,
+                    assunto: assunto,
+                    email: EMAIL_DESTINO,
+                    anexos: anexosBase64
+                };
+
+                return fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
             })
-            .then(response => {
-                // Reabilitar botão
-                btnEnviar.disabled = false;
-                btnEnviar.innerHTML = '<i class="fas fa-envelope"></i> Enviar por E-mail';
-                
-                // Mostrar modal de sucesso
+            .then(() => {
+                btnEmail.innerHTML = textoOriginal;
+                btnEmail.disabled = false;
                 mostrarModal();
-                
-                // Limpar formulário após 2 segundos
                 setTimeout(() => {
                     limparFormulario();
                 }, 2000);
             })
             .catch(error => {
+                btnEmail.innerHTML = textoOriginal;
+                btnEmail.disabled = false;
                 console.error('Erro:', error);
-                
-                // Reabilitar botão
-                btnEnviar.disabled = false;
-                btnEnviar.innerHTML = '<i class="fas fa-envelope"></i> Enviar por E-mail';
-                
-                // Mostrar modal de erro
                 mostrarModalErro();
             });
         }
@@ -681,8 +718,7 @@
                 renderFiles();
                 charCount.textContent = '0';
                 
-                // Limpar erros
-                const fields = ['titulo', 'data-hora', 'local', 'descricao'];
+                const fields = ['titulo', 'data-hora', 'local', 'lider', 'descricao'];
                 fields.forEach(field => {
                     document.getElementById(field).classList.remove('error-field');
                     const errorKey = field.split('-')[0];
