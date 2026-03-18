@@ -412,12 +412,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="local">Localização Exata *</label>
-                    <input type="text" id="local" name="local" placeholder="Ex: Bloco B, Estacionamento Sul..." required>
-                    <div class="error-msg" id="error-local">Informe o local.</div>
-                </div>
-
-                <div class="form-group">
                     <label for="lider">Identificação do Líder SPGA *</label>
                     <input type="text" id="lider" name="lider" placeholder="Nome do líder SPGA responsável" required>
                     <div class="error-msg" id="error-lider">Informe o líder SPGA.</div>
@@ -574,7 +568,7 @@
         // Validação e Envio
         function validarForm() {
             let isValid = true;
-            const fields = ['titulo', 'data-hora', 'local', 'lider', 'descricao'];
+            const fields = ['titulo', 'data-hora', 'lider', 'descricao'];
             
             fields.forEach(field => {
                 const el = document.getElementById(field);
@@ -597,7 +591,6 @@
         function gerarTextoFormatado() {
             const titulo = document.getElementById('titulo').value.trim();
             const dataOrig = document.getElementById('data-hora').value;
-            const local = document.getElementById('local').value.trim();
             const lider = document.getElementById('lider').value.trim();
             const desc = document.getElementById('descricao').value.trim();
 
@@ -607,7 +600,7 @@
                 dataFormatada = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
             }
 
-            return `*SPGA – Ocorrência | HMUE*\n\n*📌 Título:* ${titulo}\n*📅 Data/Hora:* ${dataFormatada}\n*📍 Local:* ${local}\n*👤 Líder SPGA:* ${lider}\n\n*📄 Descrição:*\n${desc}`;
+            return `*SPGA – Ocorrência | HMUE*\n\n*📌 Título:* ${titulo}\n*📅 Data/Hora:* ${dataFormatada}\n*👤 Líder SPGA:* ${lider}\n\n*📄 Descrição:*\n${desc}`;
         }
 
         function enviarOcorrencia(metodo) {
@@ -618,7 +611,6 @@
 
             const titulo = document.getElementById('titulo').value.trim();
             const dataOrig = document.getElementById('data-hora').value;
-            const local = document.getElementById('local').value.trim();
             const lider = document.getElementById('lider').value.trim();
             const desc = document.getElementById('descricao').value.trim();
 
@@ -629,7 +621,7 @@
             }
 
             if (metodo === 'email') {
-                enviarParaEmail(titulo, dataFormatada, local, lider, desc);
+                enviarParaEmail(titulo, dataFormatada, lider, desc);
             } else if (metodo === 'whatsapp') {
                 const texto = gerarTextoFormatado();
                 const mensagem = encodeURIComponent(texto);
@@ -638,7 +630,7 @@
             }
         }
 
-        function enviarParaEmail(titulo, data, local, lider, desc) {
+        function enviarParaEmail(titulo, data, lider, desc) {
             const btnEmail = document.querySelector('.btn-email');
             const textoOriginal = btnEmail.innerHTML;
             btnEmail.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
@@ -664,7 +656,6 @@
                 const payload = {
                     titulo: titulo,
                     dataHora: data,
-                    local: local,
                     lider: lider,
                     descricao: desc,
                     assunto: assunto,
@@ -718,7 +709,7 @@
                 renderFiles();
                 charCount.textContent = '0';
                 
-                const fields = ['titulo', 'data-hora', 'local', 'lider', 'descricao'];
+                const fields = ['titulo', 'data-hora', 'lider', 'descricao'];
                 fields.forEach(field => {
                     document.getElementById(field).classList.remove('error-field');
                     const errorKey = field.split('-')[0];
