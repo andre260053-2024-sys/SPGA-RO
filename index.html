@@ -246,9 +246,14 @@
             color: var(--white);
         }
 
-        .btn:hover {
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .btn-email {
@@ -345,6 +350,12 @@
             margin-bottom: 20px;
         }
 
+        .error-icon {
+            font-size: 4rem;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
         .btn-close-modal {
             background: none;
             border: none;
@@ -381,71 +392,73 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-edit"></i>
-                <h3>Dados da Ocorrência</h3>
+        <form id="ocorrenciaForm">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-edit"></i>
+                    <h3>Dados da Ocorrência</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="titulo">Título da Ocorrência *</label>
+                    <input type="text" id="titulo" name="titulo" placeholder="Ex: Furto de cabos, Avaria em porta..." required>
+                    <div class="error-msg" id="error-titulo">Por favor, informe um título.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="data-hora">Data e Hora do Evento *</label>
+                    <input type="datetime-local" id="data-hora" name="dataHora" required>
+                    <div class="error-msg" id="error-data">Informe a data e hora.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="local">Localização Exata *</label>
+                    <input type="text" id="local" name="local" placeholder="Ex: Bloco B, Estacionamento Sul..." required>
+                    <div class="error-msg" id="error-local">Informe o local.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descrição Detalhada *</label>
+                    <textarea id="descricao" name="descricao" rows="6" placeholder="Descreva o que aconteceu com o máximo de detalhes possível..." required></textarea>
+                    <div class="char-counter"><span id="char-count">0</span>/1000 caracteres</div>
+                    <div class="error-msg" id="error-descricao">A descrição é obrigatória.</div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="titulo">Título da Ocorrência *</label>
-                <input type="text" id="titulo" placeholder="Ex: Furto de cabos, Avaria em porta..." required>
-                <div class="error-msg" id="error-titulo">Por favor, informe um título.</div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-camera"></i>
+                    <h3>Evidências (Fotos/Documentos)</h3>
+                </div>
+                
+                <div class="file-upload-box" onclick="document.getElementById('file-input').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Clique para selecionar ou arraste arquivos aqui</p>
+                    <span style="font-size: 0.8rem; color: var(--text-light);">Formatos aceitos: JPG, PNG, PDF (Máx 5MB)</span>
+                </div>
+                <input type="file" id="file-input" multiple accept="image/*,.pdf">
+                
+                <div class="file-list" id="file-list">
+                    <!-- Arquivos aparecerão aqui -->
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="data-hora">Data e Hora do Evento *</label>
-                <input type="datetime-local" id="data-hora" required>
-                <div class="error-msg" id="error-data">Informe a data e hora.</div>
-            </div>
-
-            <div class="form-group">
-                <label for="local">Localização Exata *</label>
-                <input type="text" id="local" placeholder="Ex: Bloco B, Estacionamento Sul..." required>
-                <div class="error-msg" id="error-local">Informe o local.</div>
-            </div>
-
-            <div class="form-group">
-                <label for="descricao">Descrição Detalhada *</label>
-                <textarea id="descricao" rows="6" placeholder="Descreva o que aconteceu com o máximo de detalhes possível..." required></textarea>
-                <div class="char-counter"><span id="char-count">0</span>/1000 caracteres</div>
-                <div class="error-msg" id="error-descricao">A descrição é obrigatória.</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-camera"></i>
-                <h3>Evidências (Fotos/Documentos)</h3>
+            <div class="actions-grid">
+                <button type="button" class="btn btn-email" onclick="enviarOcorrencia('sheets')">
+                    <i class="fas fa-database"></i>
+                    Salvar no Banco
+                </button>
+                <button type="button" class="btn btn-wpp" onclick="enviarOcorrencia('whatsapp')">
+                    <i class="fab fa-whatsapp"></i>
+                    Enviar via WhatsApp
+                </button>
             </div>
             
-            <div class="file-upload-box" onclick="document.getElementById('file-input').click()">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <p>Clique para selecionar ou arraste arquivos aqui</p>
-                <span style="font-size: 0.8rem; color: var(--text-light);">Formatos aceitos: JPG, PNG, PDF (Máx 5MB)</span>
-            </div>
-            <input type="file" id="file-input" multiple accept="image/*,.pdf">
-            
-            <div class="file-list" id="file-list">
-                <!-- Arquivos aparecerão aqui -->
-            </div>
-        </div>
-
-        <div class="actions-grid">
-            <button class="btn btn-email" onclick="enviarOcorrencia('email')">
-                <i class="fas fa-envelope"></i>
-                Enviar por E-mail
+            <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 15px;" onclick="limparFormulario()">
+                <i class="fas fa-eraser"></i>
+                Limpar Formulário
             </button>
-            <button class="btn btn-wpp" onclick="enviarOcorrencia('whatsapp')">
-                <i class="fab fa-whatsapp"></i>
-                Enviar via WhatsApp
-            </button>
-        </div>
-        
-        <button class="btn btn-outline" style="width: 100%; margin-top: 15px;" onclick="limparFormulario()">
-            <i class="fas fa-eraser"></i>
-            Limpar Formulário
-        </button>
+        </form>
 
     </div>
 
@@ -458,20 +471,39 @@
     <div class="modal-overlay" id="modal-sucesso">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Registro Iniciado</h3>
-                <button class="btn-close-modal" onclick="fecharModal()">&times;</button>
+                <h3>Registro Salvo com Sucesso!</h3>
+                <button type="button" class="btn-close-modal" onclick="fecharModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="success-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <p id="modal-text">Seu registro foi formatado com sucesso! Você será redirecionado para concluir o envio.</p>
-                <button class="btn btn-email" style="width: 100%; margin-top: 20px;" onclick="fecharModal()">Entendido</button>
+                <p id="modal-text">Seu registro foi salvo com sucesso na planilha!</p>
+                <button type="button" class="btn btn-email" style="width: 100%; margin-top: 20px;" onclick="fecharModal()">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Erro -->
+    <div class="modal-overlay" id="modal-erro">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Erro ao Salvar</h3>
+                <button type="button" class="btn-close-modal" onclick="fecharModalErro()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p id="modal-erro-text">Ocorreu um erro ao salvar o registro. Tente novamente.</p>
+                <button type="button" class="btn btn-email" style="width: 100%; margin-top: 20px;" onclick="fecharModalErro()">Tentar Novamente</button>
             </div>
         </div>
     </div>
 
     <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRsp931aSamfqzlmcsYJFRXcExHZF7338sFIlXBBZphI5vp-U7mke-z8nm5zK7cwAEvQ/exec';
+
         // Contador de caracteres
         const descricao = document.getElementById('descricao');
         const charCount = document.getElementById('char-count');
@@ -512,7 +544,7 @@
                         <i class="fas ${file.type.includes('image') ? 'fa-image' : 'fa-file-pdf'}"></i>
                         <span>${file.name}</span>
                     </div>
-                    <button class="btn-remove-file" onclick="removeFile(${index})">
+                    <button type="button" class="btn-remove-file" onclick="removeFile(${index})">
                         <i class="fas fa-trash"></i>
                     </button>
                 `;
@@ -532,7 +564,8 @@
             
             fields.forEach(field => {
                 const el = document.getElementById(field);
-                const error = document.getElementById(`error-${field.split('-')[0]}`);
+                const errorKey = field.split('-')[0];
+                const error = document.getElementById(`error-${errorKey}`);
                 
                 if (!el.value.trim()) {
                     el.classList.add('error-field');
@@ -561,24 +594,65 @@
                 arquivos: uploadedFiles.length
             };
 
-            const mensagem = `*NOVA OCORRÊNCIA - SPGA*%0A%0A` +
-                             `*Título:* ${dados.titulo}%0A` +
-                             `*Data/Hora:* ${dados.data}%0A` +
-                             `*Local:* ${dados.local}%0A%0A` +
-                             `*Descrição:* ${dados.descricao}%0A%0A` +
-                             `*Anexos:* ${dados.arquivos} arquivo(s)`;
-
-            if (metodo === 'whatsapp') {
+            if (metodo === 'sheets') {
+                // Enviar para Google Sheets via Apps Script
+                enviarParaGoogleSheets(dados);
+            } else if (metodo === 'whatsapp') {
+                // Enviar via WhatsApp
+                const mensagem = `*NOVA OCORRÊNCIA - SPGA*%0A%0A` +
+                                 `*Título:* ${dados.titulo}%0A` +
+                                 `*Data/Hora:* ${dados.data}%0A` +
+                                 `*Local:* ${dados.local}%0A%0A` +
+                                 `*Descrição:* ${dados.descricao}%0A%0A` +
+                                 `*Anexos:* ${dados.arquivos} arquivo(s)`;
+                
                 const url = `https://wa.me/?text=${mensagem}`;
                 window.open(url, '_blank');
-            } else {
-                const subject = `OCORRÊNCIA: ${dados.titulo}`;
-                const body = mensagem.replace(/%0A/g, '\n').replace(/\*/g, '');
-                const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                window.location.href = mailto;
             }
+        }
 
-            mostrarModal();
+        function enviarParaGoogleSheets(dados) {
+            // Preparar dados para envio
+            const formData = new FormData();
+            formData.append('titulo', dados.titulo);
+            formData.append('data', dados.data);
+            formData.append('local', dados.local);
+            formData.append('descricao', dados.descricao);
+            formData.append('quantidadeArquivos', dados.arquivos);
+
+            // Desabilitar botão enquanto processa
+            const btnSalvar = document.querySelector('.btn-email');
+            btnSalvar.disabled = true;
+            btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
+            // Enviar para Google Apps Script
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Reabilitar botão
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = '<i class="fas fa-database"></i> Salvar no Banco';
+                
+                // Mostrar modal de sucesso
+                mostrarModal();
+                
+                // Limpar formulário após 2 segundos
+                setTimeout(() => {
+                    limparFormulario();
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                
+                // Reabilitar botão
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = '<i class="fas fa-database"></i> Salvar no Banco';
+                
+                // Mostrar modal de erro
+                mostrarModalErro();
+            });
         }
 
         function mostrarModal() {
@@ -589,12 +663,17 @@
             document.getElementById('modal-sucesso').classList.remove('active');
         }
 
+        function mostrarModalErro() {
+            document.getElementById('modal-erro').classList.add('active');
+        }
+
+        function fecharModalErro() {
+            document.getElementById('modal-erro').classList.remove('active');
+        }
+
         function limparFormulario() {
             if (confirm('Deseja realmente limpar todos os campos?')) {
-                document.getElementById('titulo').value = '';
-                document.getElementById('data-hora').value = '';
-                document.getElementById('local').value = '';
-                document.getElementById('descricao').value = '';
+                document.getElementById('ocorrenciaForm').reset();
                 uploadedFiles = [];
                 renderFiles();
                 charCount.textContent = '0';
@@ -603,7 +682,8 @@
                 const fields = ['titulo', 'data-hora', 'local', 'descricao'];
                 fields.forEach(field => {
                     document.getElementById(field).classList.remove('error-field');
-                    const error = document.getElementById(`error-${field.split('-')[0]}`);
+                    const errorKey = field.split('-')[0];
+                    const error = document.getElementById(`error-${errorKey}`);
                     if (error) error.style.display = 'none';
                 });
             }
